@@ -39,8 +39,7 @@ export default {
       required: true
     }
   },
-  methods: {
-    onMouseEnter() {
+  methods: {    onMouseEnter() {
       gsap.to(this.$refs.projectCard, {
         y: -10,
         boxShadow: '0 20px 25px rgba(0, 0, 0, 0.2)',
@@ -50,16 +49,42 @@ export default {
         opacity: 1,
         duration: 0.3
       });
+      
+      // Add technology badge animation
+      const techBadges = this.$refs.projectCard.querySelectorAll('.tech-badge');
+      gsap.to(techBadges, {
+        scale: 1.1,
+        stagger: 0.05,
+        duration: 0.2,
+        ease: 'power1.out'
+      });
+      
+      // Add glowing border effect
+      gsap.to(this.$refs.projectCard, {
+        borderColor: 'var(--project-color)',
+        duration: 0.3
+      });
     },
+      
     onMouseLeave() {
       gsap.to(this.$refs.projectCard, {
         y: 0,
         boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
+        borderColor: 'rgba(0, 0, 0, 0.1)',
         duration: 0.3
       });
       gsap.to(this.$refs.projectCard.querySelector('.project-overlay'), {
         opacity: 0,
         duration: 0.3
+      });
+      
+      // Reset technology badge animation
+      const techBadges = this.$refs.projectCard.querySelectorAll('.tech-badge');
+      gsap.to(techBadges, {
+        scale: 1,
+        stagger: 0.03,
+        duration: 0.2,
+        ease: 'power1.in'
       });
     }
   }
@@ -68,27 +93,41 @@ export default {
 
 <style lang="scss" scoped>
 .project-card {
-  background: #fff;
-  border-radius: 16px;
+  background: white;
+  border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  margin: 20px;
-  width: 100%;
-  max-width: 380px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  transform-origin: center;
-  border-top: 5px solid var(--project-color);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  transform-style: preserve-3d;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: var(--project-color, #667eea);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover::before {
+    transform: scaleX(1);
+  }
   
   .project-image {
     position: relative;
     overflow: hidden;
+    height: 200px;
     
     img {
       width: 100%;
-      height: 220px;
+      height: 100%;
       object-fit: cover;
-      display: block;
       transition: transform 0.5s ease;
     }
     
@@ -97,38 +136,42 @@ export default {
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;      background: rgba(0, 0, 0, 0.6);
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       opacity: 0;
       transition: opacity 0.3s ease;
       
       .project-link {
-        padding: 10px 20px;
-        background: var(--project-color);
         color: white;
         text-decoration: none;
+        background: var(--project-color, #667eea);
+        padding: 10px 20px;
         border-radius: 30px;
         font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
         transform: translateY(20px);
         transition: transform 0.3s ease, background 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         
         &:hover {
-          background: var(--project-color);
-          filter: brightness(0.85);
+          background: white;
+          color: var(--project-color, #667eea);
         }
       }
     }
+  }
+  
+  &:hover {
+    .project-image img {
+      transform: scale(1.1);
+    }
     
-    &:hover {
-      img {
-        transform: scale(1.05);
-      }
-      
-      .project-link {
-        transform: translateY(0);
-      }
+    .project-overlay .project-link {
+      transform: translateY(0);
     }
   }
   
@@ -136,15 +179,17 @@ export default {
     padding: 20px;
     
     .project-title {
-      margin: 0 0 10px;
+      font-size: 1.4rem;
       color: #333;
-      font-size: 1.5rem;
+      margin: 0 0 10px;
+      font-weight: 700;
     }
     
     .project-description {
       color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
       margin-bottom: 15px;
-      line-height: 1.6;
     }
     
     .project-technologies {
@@ -154,11 +199,18 @@ export default {
       
       .tech-badge {
         background: #f0f0f0;
+        color: #555;
         padding: 5px 10px;
         border-radius: 15px;
         font-size: 0.8rem;
-        color: #333;
         font-weight: 500;
+        transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+        
+        &:hover {
+          background: var(--project-color, #667eea);
+          color: white;
+          transform: translateY(-3px);
+        }
       }
     }
   }

@@ -2,8 +2,17 @@
   <div id="app" :class="{ 'dark-mode': isDarkMode }">
     <!-- Loading overlay -->
     <div class="loading-overlay" v-if="isLoading">
-      <div class="loader"></div>
-      <p>Loading your awesome portfolio...</p>
+      <div class="loader-container">
+        <div class="loader-circle"></div>
+        <div class="loader-line-mask">
+          <div class="loader-line"></div>
+        </div>
+        <div class="loader-text">TEAM SHOWCASE</div>
+      </div>
+      <p>Preparing amazing team projects...</p>
+      <div class="team-loading-icons">
+        <div class="loading-icon" v-for="i in 4" :key="i"></div>
+      </div>
     </div>
 
     <div 
@@ -85,6 +94,11 @@ export default {
       // Initialize grid
       createGrid();
       window.addEventListener('resize', handleResize);
+      
+      // Setup project card grid effects after a short delay
+      setTimeout(() => {
+        createProjectCardEffects();
+      }, 2000);
     });
     
     onUnmounted(() => {
@@ -224,6 +238,9 @@ export default {
           });
         }
       }
+      
+      // Create highlighted grid cells when project cards are visible
+      createProjectCardEffects();
     };
     
     // Update active grid cells based on mouse position
@@ -283,7 +300,7 @@ export default {
     };
     
     // Create a ripple effect from the mouse click
-    const rippleEffect = (centerX, centerY) => {
+    const rippleEffect = (centerX, centerY, isFast = false) => {
       if (gridCells.value.length === 0) return;
       
       gridCells.value.forEach(cell => {
@@ -316,8 +333,8 @@ export default {
               scale: intensity * 0.5 + 1,
               backgroundColor: `hsla(${hue}, 100%, 70%, ${intensity * 0.3})`,
               boxShadow: `0 0 15px hsla(${hue}, 100%, 70%, ${intensity * 0.8})`,
-              delay: delay,
-              duration: 0.4,
+              delay: isFast ? 0 : delay,
+              duration: isFast ? 0.3 : 0.4,
               ease: 'power2.out'
             })
             .to(cell.innerElement, {
@@ -328,6 +345,58 @@ export default {
               duration: 0.8,
               ease: 'power2.in'
             });
+        }
+      });
+    };
+    
+    // Create highlighted grid cells when project cards are visible
+    const createProjectCardEffects = () => {
+      // Detect when project cards come into view
+      gsap.utils.toArray('.project-card').forEach(card => {
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top bottom-=100',
+          end: 'bottom top+=100',
+          onEnter: () => highlightGridCells(card),
+          onLeave: () => resetGridCells(),
+          onEnterBack: () => highlightGridCells(card),
+          onLeaveBack: () => resetGridCells()
+        });
+      });
+    };
+    
+    // Highlight grid cells around a project card
+    const highlightGridCells = (card) => {
+      if (gridCells.value.length === 0) return;
+      
+      const cardRect = card.getBoundingClientRect();
+      const centerX = cardRect.left + cardRect.width / 2;
+      const centerY = cardRect.top + cardRect.height / 2;
+      
+      // Create a ripple effect from the center of the card
+      rippleEffect(centerX, centerY, true);
+    };
+    
+    // Reset grid cell highlights
+    const resetGridCells = () => {
+      if (gridCells.value.length === 0) return;
+      
+      gridCells.value.forEach(cell => {
+        if (cell.isActive) {
+          gsap.to(cell.innerElement, {
+            opacity: 0.1,
+            scale: 1,
+            backgroundColor: 'transparent',
+            duration: 1,
+            ease: 'power2.out'
+          });
+          
+          gsap.to(cell.element, {
+            boxShadow: '0 0 0 rgba(0,0,0,0)',
+            duration: 1
+          });
+          
+          cell.isActive = false;
         }
       });
     };
@@ -366,7 +435,6 @@ body {
   position: relative;
 }
 
-/* Loading overlay */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -381,14 +449,53 @@ body {
   z-index: 10000;
 }
 
-.loader {
-  width: 60px;
-  height: 60px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
+.loader-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 40px;
+}
+
+.loader-circle {
+  position: absolute;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  border-top: 4px solid white;
-  animation: spin 1s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
-  margin-bottom: 20px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.loader-line-mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 60px;
+  height: 120px;
+  overflow: hidden;
+  transform-origin: 60px 60px;
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  animation: rotate 1.5s infinite ease;
+}
+
+.loader-line {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.loader-text {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  font-size: 14px;
+  text-align: center;
+  transform: translateY(-50%);
+  color: white;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  animation: pulse 1.5s infinite;
 }
 
 .loading-overlay p {
@@ -396,7 +503,7 @@ body {
   font-size: 1.2rem;
   font-weight: 500;
   letter-spacing: 1px;
-  animation: pulse 1.5s infinite;
+  animation: float 3s infinite ease-in-out;
 }
 
 @keyframes spin {
@@ -404,9 +511,92 @@ body {
   100% { transform: rotate(360deg); }
 }
 
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glitch {
+  0% {
+    clip-path: inset(40% 0 61% 0);
+    transform: translate(-5px, 5px);
+  }
+  20% {
+    clip-path: inset(92% 0 1% 0);
+    transform: translate(5px, -5px);
+  }
+  40% {
+    clip-path: inset(43% 0 1% 0);
+    transform: translate(5px, 5px);
+  }
+  60% {
+    clip-path: inset(25% 0 58% 0);
+    transform: translate(-5px, -5px);
+  }
+  80% {
+    clip-path: inset(54% 0 7% 0);
+    transform: translate(5px, 5px);
+  }
+  100% {
+    clip-path: inset(58% 0 43% 0);
+    transform: translate(-5px, 5px);
+  }
+}
+
+.team-loading-icons {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+  
+  .loading-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0.7;
+    animation: pulse-icons 1.5s infinite ease-in-out;
+    
+    &:nth-child(1) {
+      animation-delay: 0s;
+      background: #667eea;
+    }
+    
+    &:nth-child(2) {
+      animation-delay: 0.3s;
+      background: #764ba2;
+    }
+    
+    &:nth-child(3) {
+      animation-delay: 0.6s;
+      background: #4CAF50;
+    }
+    
+    &:nth-child(4) {
+      animation-delay: 0.9s;
+      background: #FF5722;
+    }
+  }
+}
+
+@keyframes pulse-icons {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
 }
 
 /* Dark mode styles */

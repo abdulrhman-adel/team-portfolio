@@ -1,10 +1,16 @@
 <template>
-  <div class="showcase-container" ref="showcaseContainer">
-    <div class="hero-section">
-      <h1 class="main-title" ref="mainTitle">My Portfolio</h1>
-      <p class="subtitle" ref="subtitle">Check out my latest work</p>
+  <div class="showcase-container" ref="showcaseContainer">    <div class="hero-section">
+      <div class="team-badge" ref="teamBadge">TEAM SHOWCASE</div>
+      <h1 class="main-title" ref="mainTitle">Our Amazing Projects</h1>
+      <p class="subtitle" ref="subtitle">Explore our team's innovative work</p>
+      <div class="team-members" ref="teamMembers">
+        <div v-for="(member, index) in teamMembers" :key="index" class="member-avatar" 
+             :style="{ backgroundImage: `url(${member.avatar})` }"
+             :data-name="member.name">
+        </div>
+      </div>
       <div class="scroll-indicator" ref="scrollIndicator">
-        <span>Scroll Down</span>
+        <span>View Projects</span>
         <div class="arrow">▼</div>
       </div>
     </div>
@@ -18,9 +24,9 @@
         ref="projectCards"
       />
     </div>
-    
-    <footer class="footer" ref="footer">
-      <p>© {{ new Date().getFullYear() }} My Portfolio. All rights reserved.</p>
+      <footer class="footer" ref="footer">
+      <p>© {{ new Date().getFullYear() }} Team Showcase. All rights reserved.</p>
+      <div class="team-credit">Created with ❤️ by our amazing team</div>
       <div class="social-links">
         <a href="#" class="social-link">GitHub</a>
         <a href="#" class="social-link">LinkedIn</a>
@@ -41,39 +47,56 @@ gsap.registerPlugin(ScrollTrigger);
 export default {
   name: 'ProjectsShowcase',
   components: {
-    ProjectCard
-  },
-  data() {
+    ProjectCard  },  data() {
     return {
-      projects
+      projects,
+      teamMembers: [
+        { name: 'Alex', avatar: 'https://placehold.co/100x100/667eea/ffffff?text=A' },
+        { name: 'Sarah', avatar: 'https://placehold.co/100x100/764ba2/ffffff?text=S' },
+        { name: 'Jamie', avatar: 'https://placehold.co/100x100/4CAF50/ffffff?text=J' },
+        { name: 'Taylor', avatar: 'https://placehold.co/100x100/FF5722/ffffff?text=T' }
+      ]
     }
   },
   mounted() {
     this.initAnimations();
   },
-  methods: {
-    initAnimations() {
+  methods: {    initAnimations() {
       // Hero section animations
       const tl = gsap.timeline();
       
-      tl.from(this.$refs.mainTitle, {
+      tl.from(this.$refs.teamBadge, {
+        y: -50,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out'
+      })
+      .from(this.$refs.mainTitle, {
         y: 50,
         opacity: 0,
         duration: 1,
         ease: 'power3.out'
-      })
+      }, '-=0.4')
       .from(this.$refs.subtitle, {
         y: 30,
         opacity: 0,
         duration: 0.8,
         ease: 'power3.out'
       }, '-=0.5')
+      .from(this.$refs.teamMembers.children, {
+        scale: 0,
+        opacity: 0,
+        y: 30,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'back.out(1.7)',
+      }, '-=0.3')
       .from(this.$refs.scrollIndicator, {
         y: 20,
         opacity: 0,
         duration: 0.6,
         ease: 'power3.out'
-      }, '-=0.3');
+      }, '-=0.2');
       
       // Continuous scroll indicator animation
       gsap.to(this.$refs.scrollIndicator.querySelector('.arrow'), {
@@ -130,8 +153,75 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0 20px;
-  position: relative;
+  padding: 0 20px;  position: relative;
+  
+  .team-badge {
+    background: linear-gradient(45deg, #764ba2, #667eea);
+    color: white;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: 20px;
+    letter-spacing: 1.5px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      width: 120%;
+      height: 120%;
+      background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0) 100%);
+      transform: rotate(25deg) translateX(-100%);
+      animation: shimmer 3s infinite;
+    }
+  }
+  
+  .team-members {
+    display: flex;
+    gap: 20px;
+    margin: 30px 0;
+    
+    .member-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      position: relative;
+      
+      &::after {
+        content: attr(data-name);
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.8rem;
+        color: #555;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        white-space: nowrap;
+      }
+      
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        
+        &::after {
+          opacity: 1;
+        }
+      }
+    }
+  }
   
   .main-title {
     font-size: 4rem;
@@ -200,27 +290,90 @@ export default {
   color: white;
   padding: 40px 20px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #6B8DD6, #8E37D7);
+    background-size: 300% 100%;
+    animation: gradientMove 4s ease infinite;
+  }
   
   p {
-    margin: 0 0 20px;
+    margin: 0 0 10px;
     opacity: 0.8;
+  }
+  
+  .team-credit {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 15px 0;
+    color: #f0f0f0;
+    letter-spacing: 0.5px;
   }
   
   .social-links {
     display: flex;
     justify-content: center;
     gap: 20px;
+    margin-top: 20px;
     
     .social-link {
       color: white;
       text-decoration: none;
       opacity: 0.7;
-      transition: opacity 0.3s ease;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 5px 10px;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: white;
+        transform: scaleX(0);
+        transform-origin: center;
+        transition: transform 0.3s ease;
+      }
       
       &:hover {
         opacity: 1;
+        
+        &::after {
+          transform: scaleX(1);
+        }
       }
     }
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: rotate(25deg) translateX(-100%);
+  }
+  100% {
+    transform: rotate(25deg) translateX(100%);
+  }
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 </style>

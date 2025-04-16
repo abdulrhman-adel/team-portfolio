@@ -17,7 +17,7 @@
       v-show="!isLoading"
     ></div>
     
-    <div class="interactive-particles" ref="particlesContainer"></div>
+    <div class="interactive-grid" ref="gridContainer"></div>
     
     <button @click="toggleDarkMode" class="theme-toggle" v-show="!isLoading">
       <span v-if="isDarkMode">☀️</span>
@@ -33,6 +33,10 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import ProjectsShowcase from './components/ProjectsShowcase.vue';
 import { useMouseFollower, useDarkMode } from './composables/effects.js';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
 
 export default {
   name: 'App',
@@ -50,9 +54,14 @@ export default {
     const cursorScale = ref(1);
     const cursorVisible = ref(false);
     
-    // Particle effect refs
-    const particlesContainer = ref(null);
-    const particles = ref([]);
+    // Grid effect refs
+    const gridContainer = ref(null);
+    const gridCells = ref([]);
+    const gridSize = ref({ cols: 0, rows: 0 });
+    const cellSize = 40; // Size of each grid cell in pixels
+    
+    // Additional tracking for grid animation
+    const lastMousePos = ref({ x: 0, y: 0 });
     
     onMounted(() => {
       // Make cursor visible after component mounts
@@ -73,9 +82,9 @@ export default {
         setupInteractiveElements();
       }, 1800);
       
-      // Initialize particles
-      createParticles();
-      animateParticles();
+      // Initialize grid
+      createGrid();
+      window.addEventListener('resize', handleResize);
     });
     
     onUnmounted(() => {
@@ -84,15 +93,13 @@ export default {
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
-      
-      // Clear particles animation if any
-      if (window.particleAnimationFrame) {
-        cancelAnimationFrame(window.particleAnimationFrame);
-      }
+      window.removeEventListener('resize', handleResize);
     });
     
-    const handleMouseMove = () => {
-      // Already handled by useMouseFollower
+    const handleMouseMove = (e) => {
+      // Track mouse position for grid cell activation
+      lastMousePos.value = { x: e.clientX, y: e.clientY };
+      updateActiveGridCells(e.clientX, e.clientY);
     };
     
     const handleMouseDown = () => {
@@ -102,6 +109,10 @@ export default {
         ease: 'power3.out',
         overwrite: true
       });
+      
+      // Light up surrounding cells on click
+      const { x, y } = lastMousePos.value;
+      rippleEffect(x, y);
     };
     
     const handleMouseUp = () => {
@@ -119,6 +130,17 @@ export default {
     
     const handleMouseLeave = () => {
       cursorVisible.value = false;
+    };
+    
+    const handleResize = () => {
+      // Clear existing grid
+      if (gridContainer.value) {
+        gridContainer.value.innerHTML = '';
+      }
+      gridCells.value = [];
+      
+      // Recreate grid
+      createGrid();
     };
     
     // Track interactive elements
@@ -146,76 +168,168 @@ export default {
       });
     };
     
-    // Create floating particles background
-    const createParticles = () => {
-      if (!particlesContainer.value) return;
+    // Create grid layout
+    const createGrid = () => {
+      if (!gridContainer.value) return;
       
-      const container = particlesContainer.value;
-      const containerWidth = window.innerWidth;
-      const containerHeight = window.innerHeight;
+      const container = gridContainer.value;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
       
-      for (let i = 0; i < 50; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        
-        // Random properties
-        const size = Math.random() * 5 + 3;
-        const posX = Math.random() * containerWidth;
-        const posY = Math.random() * containerHeight;
-        const opacity = Math.random() * 0.5 + 0.1;
-        const delay = Math.random() * 5;
-        
-        // Apply styles
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        particle.style.left = `${posX}px`;
-        particle.style.top = `${posY}px`;
-        particle.style.opacity = opacity;
-        particle.style.animationDelay = `${delay}s`;
-        
-        // Store particle data
-        particles.value.push({
-          element: particle,
-          x: posX,
-          y: posY,
-          size,
-          speedX: Math.random() * 1 - 0.5,
-          speedY: Math.random() * 1 - 0.5
-        });
-        
-        // Add to DOM
-        container.appendChild(particle);
+      // Calculate number of cells
+      const cols = Math.ceil(viewportWidth / cellSize);
+      const rows = Math.ceil(viewportHeight / cellSize);
+      
+      gridSize.value = { cols, rows };
+      
+      // Create grid cells
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const cell = document.createElement('div');
+          cell.className = 'grid-cell';
+          
+          // Position cell
+          cell.style.width = `${cellSize}px`;
+          cell.style.height = `${cellSize}px`;
+          cell.style.left = `${col * cellSize}px`;
+          cell.style.top = `${row * cellSize}px`;
+          
+          // Create inner cell for glow effect
+          const innerCell = document.createElement('div');
+          innerCell.className = 'cell-inner';
+          cell.appendChild(innerCell);
+          
+          // Store cell data
+          const cellData = {
+            element: cell,
+            innerElement: innerCell,
+            row,
+            col,
+            x: col * cellSize,
+            y: row * cellSize,
+            isActive: false,
+            brightness: 0
+          };
+          
+          gridCells.value.push(cellData);
+          container.appendChild(cell);
+          
+          // Add staggered entrance animation
+          gsap.from(cell, {
+            opacity: 0,
+            scale: 0.5,
+            delay: (row + col) * 0.01,
+            duration: 0.5,
+            ease: 'power2.out'
+          });
+        }
       }
     };
     
-    // Animate particles with subtle movement
-    const animateParticles = () => {
-      if (particles.value.length === 0) return;
+    // Update active grid cells based on mouse position
+    const updateActiveGridCells = (mouseX, mouseY) => {
+      if (gridCells.value.length === 0) return;
       
-      const animate = () => {
-        particles.value.forEach(particle => {
-          // Update position
-          particle.x += particle.speedX;
-          particle.y += particle.speedY;
-          
-          // Boundary check
-          if (particle.x < 0 || particle.x > window.innerWidth) {
-            particle.speedX *= -1;
-          }
-          
-          if (particle.y < 0 || particle.y > window.innerHeight) {
-            particle.speedY *= -1;
-          }
-          
-          // Apply position
-          particle.element.style.left = `${particle.x}px`;
-          particle.element.style.top = `${particle.y}px`;
-        });
+      gridCells.value.forEach(cell => {
+        // Calculate distance from mouse to cell center
+        const cellCenterX = cell.x + cellSize / 2;
+        const cellCenterY = cell.y + cellSize / 2;
         
-        window.particleAnimationFrame = requestAnimationFrame(animate);
-      };
+        const dx = mouseX - cellCenterX;
+        const dy = mouseY - cellCenterY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Define how far the effect spreads
+        const radius = 150;
+        
+        if (distance < radius) {
+          // Calculate brightness based on distance (closer = brighter)
+          const brightness = 1 - distance / radius;
+          
+          // Animate cell
+          gsap.to(cell.innerElement, {
+            opacity: brightness * 0.8 + 0.2,
+            scale: brightness * 0.2 + 1,
+            duration: 0.5,
+            ease: 'power2.out'
+          });
+          
+          // Border glow effect
+          const hue = (cell.row + cell.col) % 360;
+          const borderColor = `hsla(${hue}, 100%, 70%, ${brightness * 0.8})`;
+          gsap.to(cell.element, {
+            boxShadow: `0 0 12px ${borderColor}`,
+            duration: 0.5
+          });
+          
+          cell.isActive = true;
+        } else if (cell.isActive) {
+          // Fade out when no longer in range
+          gsap.to(cell.innerElement, {
+            opacity: 0.1,
+            scale: 1,
+            duration: 0.8,
+            ease: 'power2.out'
+          });
+          
+          gsap.to(cell.element, {
+            boxShadow: '0 0 0 rgba(0,0,0,0)',
+            duration: 0.8
+          });
+          
+          cell.isActive = false;
+        }
+      });
+    };
+    
+    // Create a ripple effect from the mouse click
+    const rippleEffect = (centerX, centerY) => {
+      if (gridCells.value.length === 0) return;
       
-      animate();
+      gridCells.value.forEach(cell => {
+        // Calculate distance from click to cell center
+        const cellCenterX = cell.x + cellSize / 2;
+        const cellCenterY = cell.y + cellSize / 2;
+        
+        const dx = centerX - cellCenterX;
+        const dy = centerY - cellCenterY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Define ripple properties
+        const maxRadius = 300;
+        const maxDelay = 0.5;
+        
+        if (distance < maxRadius) {
+          // Calculate delay based on distance
+          const delay = (distance / maxRadius) * maxDelay;
+          
+          // Calculate intensity based on distance
+          const intensity = 1 - distance / maxRadius;
+          
+          // Random color for ripple
+          const hue = Math.random() * 60 + 220; // Blue to purple range
+          
+          // Animate glow
+          gsap.timeline()
+            .to(cell.innerElement, {
+              opacity: intensity * 0.8 + 0.2,
+              scale: intensity * 0.5 + 1,
+              backgroundColor: `hsla(${hue}, 100%, 70%, ${intensity * 0.3})`,
+              boxShadow: `0 0 15px hsla(${hue}, 100%, 70%, ${intensity * 0.8})`,
+              delay: delay,
+              duration: 0.4,
+              ease: 'power2.out'
+            })
+            .to(cell.innerElement, {
+              opacity: 0.1,
+              scale: 1,
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
+              duration: 0.8,
+              ease: 'power2.in'
+            });
+        }
+      });
     };
     
     return {
@@ -224,7 +338,7 @@ export default {
       toggleDarkMode,
       cursorScale,
       cursorVisible,
-      particlesContainer,
+      gridContainer,
       isLoading
     };
   }
@@ -250,6 +364,49 @@ body {
 #app {
   min-height: 100vh;
   position: relative;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.loader {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 4px solid white;
+  animation: spin 1s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  margin-bottom: 20px;
+}
+
+.loading-overlay p {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 /* Dark mode styles */
@@ -278,6 +435,44 @@ body {
 
 .dark-mode .showcase-container {
   background: linear-gradient(135deg, #121212 0%, #2a2a2a 100%) !important;
+}
+
+/* Interactive Grid */
+.interactive-grid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.grid-cell {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.5s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .grid-cell {
+  border: 1px solid rgba(255, 255, 255, 0.025);
+}
+
+.cell-inner {
+  width: 70%;
+  height: 70%;
+  border-radius: 2px;
+  opacity: 0.1;
+  transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+  will-change: opacity, transform;
+}
+
+.dark-mode .cell-inner {
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 /* Mouse follower */
@@ -337,47 +532,6 @@ body {
 
 .dark-mode .theme-toggle {
   background: rgba(30, 30, 30, 0.8);
-}
-
-/* Interactive particles background */
-.interactive-particles {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  background: #6a11cb;
-  border-radius: 50%;
-  opacity: 0.2;
-  transition: opacity 0.3s ease;
-  animation: float 15s infinite ease-in-out;
-}
-
-.dark-mode .particle {
-  background: #9C27B0;
-  opacity: 0.3;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) translateX(0);
-  }
-  25% {
-    transform: translateY(-10px) translateX(10px);
-  }
-  50% {
-    transform: translateY(10px) translateX(-15px);
-  }
-  75% {
-    transform: translateY(5px) translateX(10px);
-  }
 }
 </style>
 

@@ -103,8 +103,10 @@ import ProjectCard from './ProjectCard.vue';
 import projects from '../data/projects.js';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { CSSPlugin } from 'gsap/CSSPlugin';
 
-gsap.registerPlugin(ScrollTrigger);
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger, CSSPlugin);
 
 export default {
   name: 'ProjectsShowcase',

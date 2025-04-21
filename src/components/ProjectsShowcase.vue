@@ -235,14 +235,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// define variables for colors and fonts
+$primary-color: #667eea;
+$secondary-color: #764ba2;
+$font-family: 'Roboto', sans-serif;
+$font-size: 16px;
+$font-weight: 400;
+$line-height: 1.5;
+$border-radius: 8px;
+$box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+$about-section-bg: #f0f0f0; 
 .showcase-container {
   min-height: 100vh;
   background: transparent;
   position: relative;
   overflow: hidden;
-  
-  :deep(.dark-mode) & {
+    .dark-mode & {
     color-scheme: dark;
+    background: linear-gradient(135deg, #0a0a18 0%, #151525 100%);
   }
 }
 
@@ -256,19 +266,38 @@ export default {
   padding: 0 20px;  
   position: relative;
   z-index: 2;
+  background: var(--hero-bg, transparent);
+  
+  :deep(.dark-mode) & {
+    --hero-bg: linear-gradient(135deg, rgba(15, 15, 30, 0.5) 0%, rgba(25, 25, 45, 0.5) 100%);
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(118, 75, 162, 0.08) 0%, transparent 50%);
+    z-index: -1;
+  }
   
   .team-badge {
     background: linear-gradient(45deg, #764ba2, #667eea);
     color: white;
-    padding: 8px 16px;
+    padding: 10px 20px;
     font-size: 0.9rem;
     font-weight: 700;
-    border-radius: 20px;
+    border-radius: 25px;
     letter-spacing: 1.5px;
     margin-bottom: 30px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 20px rgba(118, 75, 162, 0.25);
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(10px);
     
     &::before {
       content: '';
@@ -279,7 +308,7 @@ export default {
       height: 120%;
       background: linear-gradient(90deg, 
         rgba(255, 255, 255, 0) 0%, 
-        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0.3) 50%, 
         rgba(255, 255, 255, 0) 100%);
       transform: rotate(25deg) translateX(-100%);
       animation: shimmer 3s infinite;
@@ -339,14 +368,13 @@ export default {
       font-size: 3rem;
     }
   }
-  
-  .subtitle {
+    .subtitle {
     font-size: 1.5rem;
     color: var(--subtitle-color, #555);
     margin-top: 20px;
     max-width: 600px;
     
-    :deep(.dark-mode) & {
+    .dark-mode & {
       --subtitle-color: #d0d0d0;
       text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
@@ -486,41 +514,81 @@ export default {
 
 /* Additional styles for new sections */
 .about-team-section {
-  background: var(--about-section-bg, #f9f9f9);
-  padding: 80px 20px;
+  background: #f9f9f9;
+  padding: 100px 20px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   
-  :deep(.dark-mode) & {
-    --about-section-bg: #232323;
+  .dark-mode & {
+    background: #0f0f1e;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(103, 58, 183, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(63, 81, 181, 0.08) 0%, transparent 50%);
+    z-index: 0;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #9c27b0, #3f51b5, #667eea, #764ba2);
+    background-size: 300% 100%;
+    animation: gradientMove 6s ease infinite;
   }
   
   .section-title {
+    position: relative;
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 30px;
-    color: var(--section-title-color, #333);
-    
-    :deep(.dark-mode) & {
-      --section-title-color: #f0f0f0;
-    }
+    background: linear-gradient(45deg, #9c27b0, #3f51b5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
   }
-  
-  .team-intro {
+    .team-intro {
+    position: relative;
     max-width: 800px;
-    margin: 0 auto 50px;
+    margin: 0 auto 60px;
     font-size: 1.2rem;
     line-height: 1.7;
     color: var(--intro-text-color, #555);
+    z-index: 1;
     
-    :deep(.dark-mode) & {
-      --intro-text-color: #b0b0b0;
+    .dark-mode & {
+      --intro-text-color: #c0c0ff;
     }
   }
   
   .team-stats {
+    position: relative;
     display: flex;
     justify-content: center;
     gap: 80px;
+    z-index: 1;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 40px;
+    }
     
     .stat-item {
       text-align: center;
@@ -528,19 +596,23 @@ export default {
       .stat-number {
         font-size: 3.5rem;
         font-weight: 800;
-        color: #667eea;
+        background: linear-gradient(45deg, #9c27b0, #3f51b5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
         line-height: 1;
         margin-bottom: 10px;
+        text-shadow: 0 2px 10px rgba(156, 39, 176, 0.3);
       }
-      
-      .stat-label {
+        .stat-label {
         font-size: 1.1rem;
         color: var(--stat-label-color, #666);
         text-transform: uppercase;
         letter-spacing: 1px;
         
-        :deep(.dark-mode) & {
-          --stat-label-color: #a0a0a0;
+        .dark-mode & {
+          --stat-label-color: #c0c0ff;
         }
       }
     }
@@ -548,107 +620,212 @@ export default {
 }
 
 .projects-section {
-  padding: 80px 20px;
+  padding: 100px 20px;
+  background: #ffffff;
+  position: relative;
+  
+  .dark-mode & {
+    background: #121220;
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 5% 95%, rgba(103, 58, 183, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 95% 15%, rgba(63, 81, 181, 0.06) 0%, transparent 40%);
+    z-index: 0;
+  }
   
   .section-title {
+    position: relative;
     text-align: center;
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 50px;
-    color: #333;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1;
   }
   
   .filter-container {
+    position: relative;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 15px;
     margin-bottom: 40px;
-    
-    .filter-button {
-      background: none;
-      border: 2px solid #eaeaea;
+    z-index: 1;      .filter-button {
+      background: var(--filter-btn-bg, rgba(255, 255, 255, 0.8));
+      border: 2px solid var(--filter-btn-border, rgba(234, 234, 234, 0.8));
       border-radius: 30px;
-      padding: 10px 25px;
+      padding: 12px 30px;
       font-size: 1rem;
       font-weight: 500;
-      color: #666;
+      color: var(--filter-btn-color, #666);
       cursor: pointer;
       transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
       
-      &:hover {
+      .dark-mode & {
+        --filter-btn-bg: rgba(40, 40, 60, 0.6);
+        --filter-btn-border: rgba(80, 80, 120, 0.3);
+        --filter-btn-color: #c0c0c0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }        &:hover {
         border-color: #667eea;
         color: #667eea;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(102, 126, 234, 0.15);
+        
+        .dark-mode & {
+          box-shadow: 0 8px 15px rgba(102, 126, 234, 0.2);
+        }
       }
       
       &.active {
-        background: #667eea;
-        border-color: #667eea;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border-color: transparent;
         color: white;
+        box-shadow: 0 8px 15px rgba(102, 126, 234, 0.25);
       }
     }
   }
 }
 
 .team-spotlight {
-  background: var(--team-spotlight-bg, linear-gradient(to right, #f9f9f9, #f1f1f1));
-  padding: 80px 20px;
+  background: #f0f0f5;
+  padding: 120px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.03), 0 10px 30px rgba(0, 0, 0, 0.05);
   
-  :deep(.dark-mode) & {
-    --team-spotlight-bg: linear-gradient(to right, #232323, #1e1e1e);
+  .dark-mode & {
+    background: #0f0f1e;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1), 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(103, 58, 183, 0.1) 0%, transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(156, 39, 176, 0.1) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+    z-index: 0;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #764ba2, #667eea, #9C27B0, #3F51B5);
+    background-size: 300% 100%;
+    animation: gradientMove 6s ease infinite;
   }
   
   .section-title {
+    position: relative;
     text-align: center;
     font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: 50px;
-    color: var(--spotlight-title-color, #333);
-    
-    :deep(.dark-mode) & {
-      --spotlight-title-color: #f0f0f0;
-    }
+    margin-bottom: 70px;
+    background: linear-gradient(45deg, #9c27b0, #3f51b5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
   }
-  
-  .team-grid {
+    .team-grid {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 30px;
     max-width: 1200px;
     margin: 0 auto;
-    
-    .team-member-card {
-      background: var(--member-card-bg, white);
-      border-radius: 15px;
-      padding: 30px;
+    z-index: 1;
+      .team-member-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 35px 30px;
       text-align: center;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                  box-shadow 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
       
-      :deep(.dark-mode) & {
-        --member-card-bg: #2a2a2a;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      .dark-mode & {
+        background: rgba(30, 30, 50, 0.8);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(103, 58, 183, 0.2);
       }
-      
-      &:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, 
+          rgba(255, 255, 255, 0) 0%, 
+          rgba(255, 255, 255, 0.05) 50%, 
+          rgba(255, 255, 255, 0) 100%);
+        z-index: 0;
         
-        :deep(.dark-mode) & {
-          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        .dark-mode & {
+          background: linear-gradient(120deg, 
+            rgba(103, 58, 183, 0) 0%, 
+            rgba(103, 58, 183, 0.05) 50%, 
+            rgba(103, 58, 183, 0) 100%);
+        }
+      }        &:hover {
+        transform: translateY(-15px) scale(1.03);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+        
+        .dark-mode & {
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        .member-avatar-large {
+          transform: scale(1.1);
+          border-color: var(--project-color, #764ba2);
         }
       }
-        .member-avatar-large {
+      
+      .member-avatar-large {
         width: 120px;
         height: 120px;
         border-radius: 50%;
         background-size: cover;
         background-position: center;
         margin: 0 auto 20px;
-        border: 5px solid var(--avatar-border, #f0f0f0);
+        border: 5px solid var(--avatar-border, rgba(255, 255, 255, 0.8));
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         
         :deep(.dark-mode) & {
-          --avatar-border: #3a3a3a;
+          --avatar-border: rgba(103, 58, 183, 0.3);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
       }
       
@@ -659,14 +836,18 @@ export default {
         color: var(--member-name-color, #333);
         
         :deep(.dark-mode) & {
-          --member-name-color: #f0f0f0;
+          --member-name-color: #e0e0e0;
         }
       }
       
       .member-role {
-        color: #667eea;
         font-weight: 500;
         margin-bottom: 20px;
+        background: linear-gradient(45deg, #9c27b0, #3f51b5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
       }
       
       .member-projects {
@@ -680,7 +861,7 @@ export default {
           margin-bottom: 10px;
           
           :deep(.dark-mode) & {
-            --projects-label-color: #b0b0b0;
+            --projects-label-color: #c0c0ff;
           }
         }
         
@@ -693,12 +874,13 @@ export default {
             height: 15px;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             
             &:hover {
               transform: scale(1.4);
-            }
-          }
+              box-shadow: 0 0 8px currentColor;
+            }          }
         }
       }
     }

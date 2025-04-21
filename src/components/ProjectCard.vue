@@ -114,18 +114,17 @@ export default {
 <style lang="scss" scoped>
 .project-card {
   background: var(--card-bg, white);
-  border-radius: 10px;
+  border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  border: 2px solid rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(0, 0, 0, 0.08);
   transform-style: preserve-3d;
-  
-  :deep(.dark-mode) & {
-    --card-bg: #2a2a2a;
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+    .dark-mode & {
+    --card-bg: #1a1a30;
+    border-color: rgba(103, 58, 183, 0.3);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
   }
   
   &.featured-project {
@@ -245,48 +244,43 @@ export default {
   }
 
   .project-content {
-    padding: 20px;
-      .project-title {
+    padding: 20px;      .project-title {
       font-size: 1.4rem;
       color: var(--title-color, #333);
       margin: 0 0 10px;
       font-weight: 700;
       
-      :deep(.dark-mode) & {
-        --title-color: #f0f0f0;
+      .dark-mode & {
+        --title-color: #e0e0e0;
       }
     }
-    
-    .project-description {
+      .project-description {
       color: var(--description-color, #666);
       font-size: 0.95rem;
       line-height: 1.5;
       margin-bottom: 15px;
       
-      :deep(.dark-mode) & {
-        --description-color: #b0b0b0;
+      .dark-mode & {
+        --description-color: #c0c0ff;
       }
     }
       .team-contributors {
       display: flex;
       align-items: center;
       margin-bottom: 15px;
-      
-      .team-label {
+        .team-label {
         font-size: 0.9rem;
         font-weight: 600;
         color: var(--label-color, #555);
         margin-right: 10px;
         
-        :deep(.dark-mode) & {
-          --label-color: #b0b0b0;
+        .dark-mode & {
+          --label-color: #c0c0ff;
         }
       }
       
       .team-avatars {
-        display: flex;
-        
-        .team-avatar {
+        display: flex;          .team-avatar {
           width: 30px;
           height: 30px;
           border-radius: 50%;
@@ -299,8 +293,9 @@ export default {
           position: relative;
           z-index: 1;
           
-          :deep(.dark-mode) & {
-            --avatar-border: #2a2a2a;
+          .dark-mode & {
+            --avatar-border: rgba(103, 58, 183, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
           }
           
           &:hover {
@@ -315,8 +310,7 @@ export default {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      
-      .tech-badge {
+        .tech-badge {
         background: var(--badge-bg, #f0f0f0);
         color: var(--badge-text, #555);
         padding: 5px 10px;
@@ -325,9 +319,10 @@ export default {
         font-weight: 500;
         transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
         
-        :deep(.dark-mode) & {
-          --badge-bg: #3a3a3a;
-          --badge-text: #d0d0d0;
+        .dark-mode & {
+          --badge-bg: rgba(103, 58, 183, 0.2);
+          --badge-text: #e0e0e0;
+          box-shadow: 0 0 10px rgba(103, 58, 183, 0.1);
         }
         
         &:hover {

@@ -1,20 +1,34 @@
-<template>
-  <div 
+<template>  <div 
     class="project-card" 
     :style="{ '--project-color': project.color }"
     ref="projectCard"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
+    :class="{'featured-project': project.featured}"
   >
     <div class="project-image">
       <img :src="project.image" :alt="project.title" />
       <div class="project-overlay">
         <a :href="project.link" target="_blank" class="project-link">View Project</a>
       </div>
+      <div class="category-badge">{{ project.category }}</div>
+      <div v-if="project.featured" class="featured-badge">Featured</div>
     </div>
     <div class="project-content">
       <h3 class="project-title">{{ project.title }}</h3>
       <p class="project-description">{{ project.description }}</p>
+      <div class="team-contributors">
+        <span class="team-label">Team:</span>
+        <div class="team-avatars">
+          <div 
+            v-for="(member, index) in project.teamMembers" 
+            :key="index" 
+            class="team-avatar" 
+            :title="member"
+            :style="{ backgroundImage: `url(https://placehold.co/30x30/${getAvatarColor(member)}/ffffff?text=${member.charAt(0)})`, transform: `translateX(${-index * 10}px)` }"
+          ></div>
+        </div>
+      </div>
       <div class="project-technologies">
         <span 
           v-for="(tech, index) in project.technologies" 
@@ -39,7 +53,13 @@ export default {
       required: true
     }
   },
-  methods: {    onMouseEnter() {
+  methods: {
+    getAvatarColor(name) {
+      // Generate consistent colors based on team member names
+      const colors = ['4CAF50', '2196F3', 'FF5722', '9C27B0', '795548', '607D8B'];
+      const index = name.charCodeAt(0) % colors.length;
+      return colors[index];
+    },onMouseEnter() {
       gsap.to(this.$refs.projectCard, {
         y: -10,
         boxShadow: '0 20px 25px rgba(0, 0, 0, 0.2)',
@@ -93,7 +113,7 @@ export default {
 
 <style lang="scss" scoped>
 .project-card {
-  background: white;
+  background: var(--card-bg, white);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
@@ -101,6 +121,23 @@ export default {
   position: relative;
   border: 2px solid rgba(0, 0, 0, 0.1);
   transform-style: preserve-3d;
+  
+  :deep(.dark-mode) & {
+    --card-bg: #2a2a2a;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  &.featured-project {
+    transform: scale(1.02);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+    border-width: 3px;
+    border-color: var(--project-color);
+    
+    &::before {
+      transform: scaleX(1);
+    }
+  }
   
   &::before {
     content: '';
@@ -163,8 +200,40 @@ export default {
         }
       }
     }
+    
+    .category-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+      letter-spacing: 0.5px;
+    }
+    
+    .featured-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--project-color, #667eea);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+      letter-spacing: 0.5px;
+      transform: rotate(5deg);
+    }
   }
-  
+
   &:hover {
     .project-image img {
       transform: scale(1.1);
@@ -174,22 +243,72 @@ export default {
       transform: translateY(0);
     }
   }
-  
+
   .project-content {
     padding: 20px;
-    
-    .project-title {
+      .project-title {
       font-size: 1.4rem;
-      color: #333;
+      color: var(--title-color, #333);
       margin: 0 0 10px;
       font-weight: 700;
+      
+      :deep(.dark-mode) & {
+        --title-color: #f0f0f0;
+      }
     }
     
     .project-description {
-      color: #666;
+      color: var(--description-color, #666);
       font-size: 0.95rem;
       line-height: 1.5;
       margin-bottom: 15px;
+      
+      :deep(.dark-mode) & {
+        --description-color: #b0b0b0;
+      }
+    }
+      .team-contributors {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      
+      .team-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--label-color, #555);
+        margin-right: 10px;
+        
+        :deep(.dark-mode) & {
+          --label-color: #b0b0b0;
+        }
+      }
+      
+      .team-avatars {
+        display: flex;
+        
+        .team-avatar {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background-size: cover;
+          background-position: center;
+          border: 2px solid var(--avatar-border, white);
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s ease;
+          margin-right: -10px;
+          position: relative;
+          z-index: 1;
+          
+          :deep(.dark-mode) & {
+            --avatar-border: #2a2a2a;
+          }
+          
+          &:hover {
+            transform: translateY(-5px) scale(1.1) !important;
+            z-index: 5;
+          }
+        }
+      }
     }
     
     .project-technologies {
@@ -198,13 +317,18 @@ export default {
       gap: 8px;
       
       .tech-badge {
-        background: #f0f0f0;
-        color: #555;
+        background: var(--badge-bg, #f0f0f0);
+        color: var(--badge-text, #555);
         padding: 5px 10px;
         border-radius: 15px;
         font-size: 0.8rem;
         font-weight: 500;
         transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+        
+        :deep(.dark-mode) & {
+          --badge-bg: #3a3a3a;
+          --badge-text: #d0d0d0;
+        }
         
         &:hover {
           background: var(--project-color, #667eea);
@@ -214,5 +338,6 @@ export default {
       }
     }
   }
-}
+  }
+
 </style>

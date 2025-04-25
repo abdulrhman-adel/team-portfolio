@@ -1,50 +1,50 @@
 export default [
   {
     id: 1,
-    title: "EcoTrack Dashboard",
-    description: "An award-winning sustainability tracking platform that helps organizations monitor and reduce their carbon footprint with real-time insights.",
-    technologies: ["Vue.js", "Node.js", "MongoDB", "D3.js"],
-    image: "https://placehold.co/600x400/4CAF50/FFFFFF?text=EcoTrack",
-    link: "https://github.com",
+    title: "Qurani",
+    description: "Explore the Holy Quran with comprehensive features: listen to recitations, read translations in multiple languages, engage with our AI companion for insightful answers and utilize convenient TTS functionality for an accessible experience.",
+    technologies: ["React", "Next.js", "Vercel", "shadcn"],
+    image: "https://placehold.co/600x400/4CAF50/FFFFFF?text=Qurani",
+    link: "https://qurani-aya-dev.vercel.app",
     color: "#4CAF50",
-    teamMembers: ["Alex", "Sarah", "Jamie", "Taylor"],
+    teamMembers: ["Abdulrhman Zakaria"],
     featured: true,
     category: "Web Application"
   },
   {
     id: 2,
-    title: "ShopSmart Platform",
-    description: "A comprehensive e-commerce solution with integrated inventory management, payment processing, and AI-powered product recommendations.",
-    technologies: ["React", "Firebase", "Stripe", "TensorFlow.js"],
-    image: "https://placehold.co/600x400/2196F3/FFFFFF?text=ShopSmart",
+    title: "SynchroSheet",
+    description: "A powerful online spreadsheet offering real-time editing, granular control over user access across your organization, a clear overview of active users, valuable system and security insights for administrators and more!",
+    technologies: ["Vue.js", "WebSockets", "FastAPI", "PostgreSQL"],
+    image: "https://placehold.co/600x400/2196F3/FFFFFF?text=SynchroSheet",
     link: "https://github.com",
     color: "#2196F3",
-    teamMembers: ["Sarah", "Taylor", "Alex"],
-    featured: true,
-    category: "E-Commerce"
+    teamMembers: ["Abdulrhman Adel"],
+    featured: false,
+    category: "Productivity"
   },
   {
     id: 3,
-    title: "DataViz Analytics",
-    description: "Interactive data visualization dashboard that transforms complex datasets into actionable insights with customizable reporting features.",
-    technologies: ["D3.js", "Express", "PostgreSQL", "GraphQL"],
-    image: "https://placehold.co/600x400/FF5722/FFFFFF?text=DataViz",
-    link: "https://github.com",
+     title: "Los Pollos Hermanos",
+    description: "Welcome to Los Pollos Hermanos! Browse our (fictional) menu and place your order. Keep an eye out for secret codes or specific ordering patterns that might just unlock a hidden, special section for those in the know.",
+    technologies: ["HTML", "CSS", "JavaScript", "Netlify"],
+    image: "https://placehold.co/600x400/FF5722/FFFFFF?text=Los+Pollos",
+    link: "https://los-polloshermanos.netlify.app",
     color: "#FF5722",
-    teamMembers: ["Jamie", "Alex", "Taylor"],
+    teamMembers: ["Mohammed EL-Gharib"],
     featured: false,
-    category: "Data Visualization"
+    category: "Entertainment"
   },
   {
     id: 4,
-    title: "ContentGenius AI",
-    description: "AI-powered content creation platform that helps marketing teams generate high-quality, SEO-optimized content with customizable tone and style.",
-    technologies: ["Python", "TensorFlow", "Vue.js", "FastAPI"],
-    image: "https://placehold.co/600x400/9C27B0/FFFFFF?text=ContentGenius",
-    link: "https://github.com",
+    title: "Portfolio",
+    description: ": Discover the skills, experience, and showcased projects of Mahmooud. This personal website provides an overview of their professional journey.",
+    technologies: ["HTML", "CSS", "JavaScript", "FontAwesome"],
+    image: "https://placehold.co/600x400/9C27B0/FFFFFF?text=Portfolio",
+    link: "https://mahmoud-elkhwass-profile-1-mr-coder.netlify.app",
     color: "#9C27B0",
-    teamMembers: ["Taylor", "Sarah", "Jamie"],
+    teamMembers: ["Mahmoud EL-Khwass"],
     featured: false,
-    category: "AI Tool"
+    category: "Portfolio"
   }
 ];

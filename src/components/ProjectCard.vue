@@ -16,17 +16,14 @@
     </div>
     <div class="project-content">
       <h3 class="project-title">{{ project.title }}</h3>
-      <p class="project-description">{{ project.description }}</p>
-      <div class="team-contributors">
-        <span class="team-label">Team:</span>
-        <div class="team-avatars">
+      <p class="project-description">{{ project.description }}</p>      <div class="team-contributors">
+        <div class="collaborator-badge">
           <div 
-            v-for="(member, index) in project.teamMembers" 
-            :key="index" 
             class="team-avatar" 
-            :title="member"
-            :style="{ backgroundImage: `url(https://placehold.co/30x30/${getAvatarColor(member)}/ffffff?text=${member.charAt(0)})`, transform: `translateX(${-index * 10}px)` }"
+            :title="project.teamMembers[0]"
+            :style="{ backgroundImage: `url(https://placehold.co/30x30/${getAvatarColor(project.teamMembers[0])}/ffffff?text=${project.teamMembers[0].charAt(0)})` }"
           ></div>
+          <span class="collaborator-name">{{ project.teamMembers[0] }}</span>
         </div>
       </div>
       <div class="project-technologies">
@@ -263,48 +260,71 @@ export default {
       .dark-mode & {
         --description-color: #c0c0ff;
       }
-    }
-      .team-contributors {
+    }      .team-contributors {
       display: flex;
       align-items: center;
       margin-bottom: 15px;
-        .team-label {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--label-color, #555);
-        margin-right: 10px;
         
-        .dark-mode & {
-          --label-color: #c0c0ff;
-        }
-      }
-      
-      .team-avatars {
-        display: flex;          .team-avatar {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          background-size: cover;
-          background-position: center;
-          border: 2px solid var(--avatar-border, white);
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          transition: transform 0.3s ease;
-          margin-right: -10px;
-          position: relative;
-          z-index: 1;
+        .collaborator-badge {
+          display: flex;
+          align-items: center;
+          background: var(--badge-bg, rgba(240, 240, 240, 0.7));
+          padding: 5px 12px;
+          border-radius: 25px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          border: 1px solid var(--badge-border, rgba(0, 0, 0, 0.05));
+          transition: all 0.3s ease;
           
           .dark-mode & {
-            --avatar-border: rgba(103, 58, 183, 0.3);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            --badge-bg: rgba(30, 30, 50, 0.3);
+            --badge-border: rgba(103, 58, 183, 0.2);
           }
           
           &:hover {
-            transform: translateY(-5px) scale(1.1) !important;
-            z-index: 5;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: var(--hover-bg, rgba(230, 230, 230, 0.9));
+            
+            .dark-mode & {
+              --hover-bg: rgba(40, 40, 70, 0.4);
+            }
+          }
+          
+          .team-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--avatar-border, white);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-right: 10px;
+            position: relative;
+            z-index: 1;
+            
+            .dark-mode & {
+              --avatar-border: rgba(103, 58, 183, 0.3);
+              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            }
+            
+            &:hover {
+              transform: scale(1.1);
+              z-index: 5;
+            }
+          }
+          
+          .collaborator-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--name-color, #555);
+            
+            .dark-mode & {
+              --name-color: #c0c0ff;
+            }
           }
         }
       }
-    }
     
     .project-technologies {
       display: flex;

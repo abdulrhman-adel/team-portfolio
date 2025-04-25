@@ -3,12 +3,6 @@
       <div class="team-badge" ref="teamBadge">TEAM SHOWCASE</div>
       <h1 class="main-title" ref="mainTitle">Our Team's Latest Projects</h1>
       <p class="subtitle" ref="subtitle">Explore our collaborative innovations</p>
-      <div class="team-members" ref="teamMembers">
-        <div v-for="(member, index) in teamMembers" :key="index" class="member-avatar" 
-             :style="{ backgroundImage: `url(${member.avatar})` }"
-             :data-name="member.name">
-        </div>
-      </div>
       <div class="scroll-indicator" ref="scrollIndicator">
         <span>View Projects</span>
         <div class="arrow">▼</div>
@@ -116,10 +110,10 @@ export default {
       projects,
       currentFilter: 'all',
       teamMembers: [
-        { name: 'Alex', avatar: 'https://placehold.co/100x100/667eea/ffffff?text=A', role: 'Full-Stack Developer' },
-        { name: 'Sarah', avatar: 'https://placehold.co/100x100/764ba2/ffffff?text=S', role: 'UX/UI Designer' },
-        { name: 'Jamie', avatar: 'https://placehold.co/100x100/4CAF50/ffffff?text=J', role: 'Back-End Developer' },
-        { name: 'Taylor', avatar: 'https://placehold.co/100x100/FF5722/ffffff?text=T', role: 'Front-End Developer' }
+        { name: 'Abdulrhman Adel', avatar: 'https://placehold.co/100x100/667eea/ffffff?text=A', role: 'Full-Stack Developer' },
+        { name: 'Mohammed EL-Gharib', avatar: 'https://placehold.co/100x100/4CAF50/ffffff?text=M', role: 'Front-End Developer' },
+        { name: 'Abdulrhman Zakaria', avatar: 'https://placehold.co/100x100/764ba2/ffffff?text=A', role: 'Backend Developer' },
+        { name: 'Mahmoud EL-Khwass', avatar: 'https://placehold.co/100x100/FF5722/ffffff?text=M', role: 'Front-End Developer' }
       ]
     }
   },
@@ -174,21 +168,12 @@ export default {
         opacity: 0,
         duration: 1,
         ease: 'power3.out'
-      }, '-=0.4')
-      .from(this.$refs.subtitle, {
+      }, '-=0.4')      .from(this.$refs.subtitle, {
         y: 30,
         opacity: 0,
         duration: 0.8,
         ease: 'power3.out'
       }, '-=0.5')
-      .from(this.$refs.teamMembers.children, {
-        scale: 0,
-        opacity: 0,
-        y: 30,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'back.out(1.7)',
-      }, '-=0.3')
       .from(this.$refs.scrollIndicator, {
         y: 20,
         opacity: 0,

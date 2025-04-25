@@ -38,7 +38,7 @@ export default [
   {
     id: 4,
     title: "Portfolio",
-    description: ": Discover the skills, experience, and showcased projects of Mahmooud. This personal website provides an overview of their professional journey.",
+    description: "Discover the skills, experience, and showcased projects of Mahmooud. This personal website provides an overview of their professional journey.",
     technologies: ["HTML", "CSS", "JavaScript", "FontAwesome"],
     image: "https://placehold.co/600x400/9C27B0/FFFFFF?text=Portfolio",
     link: "https://mahmoud-elkhwass-profile-1-mr-coder.netlify.app",

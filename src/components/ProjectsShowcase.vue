@@ -815,13 +815,14 @@ $about-section-bg: #f0f0f0;
           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
       }
+
         .member-name {
         font-size: 1.5rem;
         font-weight: 700;
         margin: 0 0 5px;
         color: var(--member-name-color, #333);
         
-        :deep(.dark-mode) & {
+      .dark-mode & {
           --member-name-color: #cfc7c7;
         }
       }
